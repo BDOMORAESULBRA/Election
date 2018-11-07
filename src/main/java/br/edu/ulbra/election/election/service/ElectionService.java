@@ -4,10 +4,8 @@ import br.edu.ulbra.election.election.repository.ElectionRepository;
 import br.edu.ulbra.election.election.model.Election;
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
-import br.edu.ulbra.election.election.output.v1.CandidateOutput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
-import br.edu.ulbra.election.election.output.v1.PartyOutput;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,10 +22,6 @@ public class ElectionService {
 	private final ElectionRepository electionRepository;
 
 	private final ModelMapper modelMapper;
-
-	// private final PartyRepository partyRepository;
-
-	// private final ElectionRepository electionRepository;
 
 	private static final String MESSAGE_INVALID_ID = "Invalid id";
 	private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
@@ -41,6 +36,27 @@ public class ElectionService {
 		Type electionOutputListType = new TypeToken<List<ElectionOutput>>() {
 		}.getType();
 		return modelMapper.map(electionRepository.findAll(), electionOutputListType);
+	}
+
+	public List<ElectionOutput> getByYear(Integer year) {
+		Type electionOutputListType = new TypeToken<List<ElectionOutput>>() {
+		}.getType();
+
+		Iterable<Election> list = electionRepository.findAll();
+
+		ArrayList<ElectionOutput> lista = new ArrayList<>();
+
+		ElectionOutput x = new ElectionOutput();
+
+		for (Election e : list) {
+			x = Election.verifica(e, year);
+			if (x != null) {
+				lista.add(x);
+			}
+		}
+
+		return modelMapper.map(lista, electionOutputListType);
+
 	}
 
 	public ElectionOutput create(ElectionInput electionInput) {

@@ -2,6 +2,8 @@ package br.edu.ulbra.election.election.model;
 
 import javax.persistence.*;
 
+import br.edu.ulbra.election.election.output.v1.ElectionOutput;
+
 @Entity
 public class Election {
 
@@ -48,6 +50,23 @@ public class Election {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public static ElectionOutput verifica(Election e, Integer year) {
+		Integer y = e.getYear();
+		
+		if(y.equals(year)) {
+			ElectionOutput electionOutput = new ElectionOutput();
+			
+			electionOutput.setId(e.getId());
+			electionOutput.setStateCode(e.getStateCode());
+			electionOutput.setDescription(e.getDescription());
+			electionOutput.setYear(e.getYear());
+			
+			return electionOutput;
+		}else {
+			return null;
+		}
 	}
 
 }
