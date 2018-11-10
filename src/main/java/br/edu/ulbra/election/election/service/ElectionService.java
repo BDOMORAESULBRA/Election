@@ -60,7 +60,7 @@ public class ElectionService {
 				lista.add(x);
 			}
 		}
-		
+
 		return modelMapper.map(lista, electionOutputListType);
 	}
 
@@ -118,13 +118,15 @@ public class ElectionService {
 	}
 
 	private void validateInput(ElectionInput electionInput) {
-		if (StringUtils.isBlank(electionInput.getStateCode())) {
+		if (StringUtils.isBlank(electionInput.getStateCode())
+				|| Election.verificaEsatdo(electionInput.getStateCode()) == false) {
 			throw new GenericOutputException("Invalid state code");
 		}
-		if (StringUtils.isBlank(electionInput.getDescription())) {
+		if (StringUtils.isBlank(electionInput.getDescription())
+				|| electionInput.getDescription().trim().replace(" ", "").length() < 5) {
 			throw new GenericOutputException("Invalid description");
 		}
-		if (electionInput.getYear() == null) {
+		if (electionInput.getYear() == null || electionInput.getYear() < 2000 || electionInput.getYear() >= 2200) {
 			throw new GenericOutputException("Invalid year");
 		}
 
