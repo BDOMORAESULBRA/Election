@@ -24,6 +24,7 @@ public class ElectionService {
 	private final ModelMapper modelMapper;
 
 	private static final String MESSAGE_INVALID_ID = "Invalid id";
+	private static final String MESSAGE_INVALID_YEAR = "Invalid year";
 	private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
 
 	@Autowired
@@ -39,6 +40,11 @@ public class ElectionService {
 	}
 
 	public List<ElectionOutput> getByYear(Integer year) {
+
+		if (year == null) {
+			throw new GenericOutputException(MESSAGE_INVALID_YEAR);
+		}
+
 		Type electionOutputListType = new TypeToken<List<ElectionOutput>>() {
 		}.getType();
 
@@ -54,9 +60,8 @@ public class ElectionService {
 				lista.add(x);
 			}
 		}
-
+		
 		return modelMapper.map(lista, electionOutputListType);
-
 	}
 
 	public ElectionOutput create(ElectionInput electionInput) {
