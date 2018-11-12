@@ -17,13 +17,13 @@ public class Vote {
 	private Long id;
 
 	@Column(nullable = false)
-	private Long electionId;
+	private Long election_Id;
 
 	@Column(nullable = false)
-	private Long voterId;
+	private Long voter_Id;
 
 	@Column(nullable = false)
-	private Long candidateId;
+	private Long candidate_Id;
 
 	public Long getId() {
 		return id;
@@ -34,27 +34,27 @@ public class Vote {
 	}
 
 	public Long getElectionId() {
-		return electionId;
+		return election_Id;
 	}
 
 	public void setElectionId(Long electionId) {
-		this.electionId = electionId;
+		this.election_Id = electionId;
 	}
 
 	public Long getVoterId() {
-		return voterId;
+		return voter_Id;
 	}
 
 	public void setVoterId(Long voterId) {
-		this.voterId = voterId;
+		this.voter_Id = voterId;
 	}
 
 	public Long getCandidateId() {
-		return candidateId;
+		return candidate_Id;
 	}
 
 	public void setCandidateId(Long candidateId) {
-		this.candidateId = candidateId;
+		this.candidate_Id = candidateId;
 	}
 
 	public static boolean verificaVoto(VoteInput voteInput, VoteRepository voteRepository) {
