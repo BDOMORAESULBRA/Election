@@ -1,7 +1,10 @@
 package br.edu.ulbra.election.election.service;
 
 import br.edu.ulbra.election.election.repository.ElectionRepository;
+import br.edu.ulbra.election.election.repository.VoteRepository;
+import br.edu.ulbra.election.election.client.CandidateClientService;
 import br.edu.ulbra.election.election.model.Election;
+import br.edu.ulbra.election.election.model.Vote2;
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
@@ -23,14 +26,21 @@ public class ElectionService {
 
 	private final ModelMapper modelMapper;
 
+	private final VoteRepository voteRepository;
+
+	private final CandidateClientService candidateClientService;
+
 	private static final String MESSAGE_INVALID_ID = "Invalid id";
 	private static final String MESSAGE_INVALID_YEAR = "Invalid year";
 	private static final String MESSAGE_ELECTION_NOT_FOUND = "Election not found";
 
 	@Autowired
-	public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper) {
+	public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper,
+			VoteRepository voteRepository, CandidateClientService candidateClientService) {
 		this.electionRepository = electionRepository;
 		this.modelMapper = modelMapper;
+		this.voteRepository = voteRepository;
+		this.candidateClientService = candidateClientService;
 	}
 
 	public List<ElectionOutput> getAll() {
@@ -90,6 +100,9 @@ public class ElectionService {
 		}
 		validateInput(electionInput);
 
+		verificaVote(electionId);
+		verificaCandidate(electionId);
+
 		Election election = electionRepository.findById(electionId).orElse(null);
 		if (election == null) {
 			throw new GenericOutputException(MESSAGE_ELECTION_NOT_FOUND);
@@ -107,6 +120,9 @@ public class ElectionService {
 			throw new GenericOutputException(MESSAGE_INVALID_ID);
 		}
 
+		verificaVote(electionId);
+		verificaCandidate(electionId);
+
 		Election election = electionRepository.findById(electionId).orElse(null);
 		if (election == null) {
 			throw new GenericOutputException(MESSAGE_ELECTION_NOT_FOUND);
@@ -119,7 +135,7 @@ public class ElectionService {
 
 	private void validateInput(ElectionInput electionInput) {
 		if (StringUtils.isBlank(electionInput.getStateCode())
-				|| Election.verificaEsatdo(electionInput.getStateCode()) == false) {
+				|| Election.verificaEstado(electionInput.getStateCode()) == false) {
 			throw new GenericOutputException("Invalid state code");
 		}
 		if (StringUtils.isBlank(electionInput.getDescription())
@@ -130,6 +146,34 @@ public class ElectionService {
 			throw new GenericOutputException("Invalid year");
 		}
 
+	}
+
+	public void verificaVote(Long electionId) {
+
+		Iterable<Vote2> list = voteRepository.findAll();
+
+		for (Vote2 v : list) {
+			if (v.getElection().getId().equals(electionId)) {
+				throw new GenericOutputException("Exists votes!");
+			}
+		}
+	}
+
+	public Boolean verificaVoteForCandidate(Long electionId) {
+
+		try {
+			verificaVote(electionId);
+			return true;
+		} catch (GenericOutputException e) {
+			return false;
+		}
+	}
+
+	private void verificaCandidate(Long electionId) {
+
+		if (candidateClientService.verificaElection(electionId) != null) {
+			throw new GenericOutputException("Exists candidates!");
+		}
 	}
 
 }

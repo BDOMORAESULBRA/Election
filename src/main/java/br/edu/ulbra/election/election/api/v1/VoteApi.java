@@ -4,10 +4,10 @@ import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
 import br.edu.ulbra.election.election.service.VoteService;
 import io.swagger.annotations.ApiOperation;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +25,15 @@ public class VoteApi {
 		this.voteService = voteService;
 	}
 
-	@PostMapping("/")
-    @ApiOperation(value = "Create new vote")
-	public GenericOutput create(@RequestBody VoteInput voteInput) {
-		return voteService.create(voteInput);
+	@PutMapping("/")
+	public GenericOutput electionVote(@RequestBody VoteInput voteInput) {
+		return voteService.electionVote(voteInput);
+	}
+
+	@GetMapping("/{voterId}")
+	@ApiOperation(value = "Get if exists voter in vote")
+	public Boolean verificaVoter(@PathVariable Long voterId) {
+		return voteService.verificaVoter(voterId);
 	}
 
 	@PutMapping("/multiple")

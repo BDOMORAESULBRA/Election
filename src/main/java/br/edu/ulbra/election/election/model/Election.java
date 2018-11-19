@@ -73,7 +73,7 @@ public class Election {
 	}
 
 	
-	public static boolean verificaEsatdo(String e) {
+	public static boolean verificaEstado(String e) {
 		for(int x = 0; x < estados.length; x++) {
 			if(estados[x].equalsIgnoreCase(e)) {
 				return true;

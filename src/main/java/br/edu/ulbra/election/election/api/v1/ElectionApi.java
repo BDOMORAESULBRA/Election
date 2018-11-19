@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1/election")
 public class ElectionApi {
-	
+
 	private final ElectionService electionService;
 
 	@Autowired
@@ -22,39 +22,45 @@ public class ElectionApi {
 		this.electionService = electionService;
 	}
 
-    @GetMapping("/")
-    @ApiOperation(value = "Get election List")
-    public List<ElectionOutput> getAll(){
-        return electionService.getAll();
-    }
+	@GetMapping("/")
+	@ApiOperation(value = "Get election List")
+	public List<ElectionOutput> getAll() {
+		return electionService.getAll();
+	}
 
-    @GetMapping("/year/{year}")
-    @ApiOperation(value = "Get election List by year")
-    public List<ElectionOutput> getByYear(@PathVariable Integer year){
-        return electionService.getByYear(year);
-    }
+	@GetMapping("/year/{year}")
+	@ApiOperation(value = "Get election List by year")
+	public List<ElectionOutput> getByYear(@PathVariable Integer year) {
+		return electionService.getByYear(year);
+	}
 
-    @GetMapping("/{electionId}")
-    @ApiOperation(value = "Get election by Id")
-    public ElectionOutput getById(@PathVariable Long electionId){
-        return electionService.getById(electionId);
-    }
+	@GetMapping("/{electionId}")
+	@ApiOperation(value = "Get election by Id")
+	public ElectionOutput getById(@PathVariable Long electionId) {
+		return electionService.getById(electionId);
+	}
 
-    @PostMapping("/")
-    @ApiOperation(value = "Create new election")
-    public ElectionOutput create(@RequestBody ElectionInput electionInput){
-        return electionService.create(electionInput);
-    }
+	@PostMapping("/")
+	@ApiOperation(value = "Create new election")
+	public ElectionOutput create(@RequestBody ElectionInput electionInput) {
+		return electionService.create(electionInput);
+	}
 
-    @PutMapping("/{electionId}")
-    @ApiOperation(value = "Update election")
-    public ElectionOutput update(@PathVariable Long electionId, @RequestBody ElectionInput electionInput){
-        return electionService.update(electionId, electionInput);
-    }
+	@PutMapping("/{electionId}")
+	@ApiOperation(value = "Update election")
+	public ElectionOutput update(@PathVariable Long electionId, @RequestBody ElectionInput electionInput) {
+		return electionService.update(electionId, electionInput);
+	}
 
-    @DeleteMapping("/{electionId}")
-    @ApiOperation(value = "Delete election")
-    public GenericOutput delete(@PathVariable Long electionId){
-        return electionService.delete(electionId);
-    }
+	@DeleteMapping("/{electionId}")
+	@ApiOperation(value = "Delete election")
+	public GenericOutput delete(@PathVariable Long electionId) {
+		return electionService.delete(electionId);
+	}
+
+	@GetMapping("/{electionId}")
+	@ApiOperation(value = "Get true or false for votes")
+	public Boolean verificaVoteForCandidate(@PathVariable Long electionId) {
+		return electionService.verificaVoteForCandidate(electionId);
+	}
 }
