@@ -2,9 +2,11 @@ package br.edu.ulbra.election.election.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.repository.VoteRepository;
@@ -17,13 +19,19 @@ public class Vote {
 	private Long id;
 
 	@Column(nullable = false)
-	private Long election_Id;
+	private Long voterId;
 
 	@Column(nullable = false)
-	private Long voter_Id;
+	private Long numberElection;
 
 	@Column(nullable = false)
-	private Long candidate_Id;
+	private Boolean blankVote;
+
+	@Column(nullable = false)
+	private Boolean nullVote;
+
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	private Election election;
 
 	public Long getId() {
 		return id;
@@ -33,30 +41,46 @@ public class Vote {
 		this.id = id;
 	}
 
-	public Long getElectionId() {
-		return election_Id;
-	}
-
-	public void setElectionId(Long electionId) {
-		this.election_Id = electionId;
-	}
-
 	public Long getVoterId() {
-		return voter_Id;
+		return voterId;
 	}
 
-	public void setVoterId(Long voterId) {
-		this.voter_Id = voterId;
+	public void setVoterId(Long voter_Id) {
+		this.voterId = voter_Id;
 	}
 
 	public Long getCandidateId() {
-		return candidate_Id;
+		return numberElection;
 	}
 
-	public void setCandidateId(Long candidateId) {
-		this.candidate_Id = candidateId;
+	public void setCandidateId(Long numberElection) {
+		this.numberElection = numberElection;
 	}
 
+	public Boolean getBlankVote() {
+		return blankVote;
+	}
+
+	public void setBlankVote(Boolean blankVote) {
+		this.blankVote = blankVote;
+	}
+
+	public Boolean getNullVote() {
+		return nullVote;
+	}
+
+	public void setNullVote(Boolean nullVote) {
+		this.nullVote = nullVote;
+	}
+
+	public Election getElection() {
+		return election;
+	}
+
+	public void setElection(Election election) {
+		this.election = election;
+	}
+	
 	public static boolean verificaVoto(VoteInput voteInput, VoteRepository voteRepository) {
 
 		Long idTeste = voteInput.getVoterId();
@@ -65,7 +89,7 @@ public class Vote {
 		Iterable<Vote> list = voteRepository.findAll();
 
 		for (Vote v : list) {
-			if (v.getVoterId().equals(idTeste) && eTeste.equals(v.getElectionId())) {
+			if (v.getVoterId().equals(idTeste) && eTeste.equals(v.getElection().getId())) {
 				return true;
 			}
 		}

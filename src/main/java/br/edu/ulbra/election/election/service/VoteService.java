@@ -2,16 +2,14 @@ package br.edu.ulbra.election.election.service;
 
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import br.edu.ulbra.election.election.client.CandidateClientService;
 import br.edu.ulbra.election.election.client.VoterClientService;
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.model.Election;
-import br.edu.ulbra.election.election.model.Vote2;
+import br.edu.ulbra.election.election.model.Vote;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
 import br.edu.ulbra.election.election.repository.ElectionRepository;
 import br.edu.ulbra.election.election.repository.VoteRepository;
@@ -30,8 +28,7 @@ public class VoteService {
 
 	@Autowired
 	public VoteService(VoteRepository voteRepository, ElectionRepository electionRepository,
-			VoterClientService voterClientService, ModelMapper modelMapper,
-			CandidateClientService candidateClientService) {
+			VoterClientService voterClientService, CandidateClientService candidateClientService) {
 		this.voteRepository = voteRepository;
 		this.electionRepository = electionRepository;
 		this.voterClientService = voterClientService;
@@ -40,7 +37,7 @@ public class VoteService {
 
 	public GenericOutput electionVote(VoteInput voteInput) {
 
-		Vote2 vote = new Vote2();
+		Vote vote = new Vote();
 		validateInput(vote, voteInput);
 
 		if (voteInput.getCandidateId() == null) {
@@ -61,9 +58,9 @@ public class VoteService {
 		return new GenericOutput("OK");
 	}
 
-	private void validateInput(Vote2 vote, VoteInput voteInput) {
+	private void validateInput(Vote vote, VoteInput voteInput) {
 
-		if (Vote2.verificaVoto(voteInput, voteRepository)) {
+		if (Vote.verificaVoto(voteInput, voteRepository)) {
 			throw new GenericOutputException("Vote used");
 		}
 
@@ -75,10 +72,8 @@ public class VoteService {
 		}
 
 		try {
-			if (voterClientService.getById(voteInput.getVoterId()) != null) {
-				vote.setVoterId(voteInput.getVoterId());
-			}
-
+			voterClientService.getById(voteInput.getVoterId());
+			vote.setVoterId(voteInput.getVoterId());
 		} catch (FeignException e) {
 			if (e.status() == 500) {
 				throw new GenericOutputException("Invalid Voter");
@@ -86,16 +81,13 @@ public class VoteService {
 		}
 
 		try {
-
-			if (candidateClientService.verificaNumero(vote.getCandidateId()) != null) {
-				vote.setNullVote(false);
-			} else {
-				vote.setNullVote(true);
-			}
-
+			candidateClientService.verificaNumero(voteInput.getCandidateId(), voteInput.getElectionId());
+			vote.setNullVote(false);
 		} catch (FeignException e) {
 			if (e.status() == 500) {
 				vote.setNullVote(true);
+			} else {
+				throw new GenericOutputException("Error");
 			}
 		}
 
@@ -103,13 +95,12 @@ public class VoteService {
 
 	public Boolean verificaVoter(Long voterId) {
 
-		Iterable<Vote2> list = voteRepository.findAll();
+		Vote vote = voteRepository.findFirstByVoterId(voterId);
 
-		for (Vote2 v : list) {
-			if (v.getVoterId().equals(voterId)) {
-				return true;
-			}
+		if (vote != null) {
+			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 }

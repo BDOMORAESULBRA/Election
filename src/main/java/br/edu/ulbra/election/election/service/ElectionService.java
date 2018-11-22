@@ -2,9 +2,9 @@ package br.edu.ulbra.election.election.service;
 
 import br.edu.ulbra.election.election.repository.ElectionRepository;
 import br.edu.ulbra.election.election.repository.VoteRepository;
+import feign.FeignException;
 import br.edu.ulbra.election.election.client.CandidateClientService;
 import br.edu.ulbra.election.election.model.Election;
-import br.edu.ulbra.election.election.model.Vote2;
 import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
@@ -23,11 +23,8 @@ import java.util.List;
 public class ElectionService {
 
 	private final ElectionRepository electionRepository;
-
 	private final ModelMapper modelMapper;
-
 	private final VoteRepository voteRepository;
-
 	private final CandidateClientService candidateClientService;
 
 	private static final String MESSAGE_INVALID_ID = "Invalid id";
@@ -100,7 +97,7 @@ public class ElectionService {
 		}
 		validateInput(electionInput);
 
-		verificaVote(electionId);
+		//verificaVote(electionId);
 		verificaCandidate(electionId);
 
 		Election election = electionRepository.findById(electionId).orElse(null);
@@ -120,7 +117,7 @@ public class ElectionService {
 			throw new GenericOutputException(MESSAGE_INVALID_ID);
 		}
 
-		verificaVote(electionId);
+		//verificaVote(electionId);
 		verificaCandidate(electionId);
 
 		Election election = electionRepository.findById(electionId).orElse(null);
@@ -148,31 +145,19 @@ public class ElectionService {
 
 	}
 
-	public void verificaVote(Long electionId) {
+	//public void verificaVote(Long electionId) {
 
-		Iterable<Vote2> list = voteRepository.findAll();
-
-		for (Vote2 v : list) {
-			if (v.getElection().getId().equals(electionId)) {
-				throw new GenericOutputException("Exists votes!");
-			}
-		}
-	}
-
-	public Boolean verificaVoteForCandidate(Long electionId) {
-
-		try {
-			verificaVote(electionId);
-			return true;
-		} catch (GenericOutputException e) {
-			return false;
-		}
-	}
+	//}
 
 	private void verificaCandidate(Long electionId) {
 
-		if (candidateClientService.verificaElection(electionId) != null) {
+		try {
+			candidateClientService.verificaElection(electionId);
 			throw new GenericOutputException("Exists candidates!");
+		} catch (FeignException e) {
+			if (e.status() != 500) {
+				throw new GenericOutputException("Error");
+			}
 		}
 	}
 

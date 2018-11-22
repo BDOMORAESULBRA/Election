@@ -20,18 +20,28 @@ public class CandidateClientService {
 	public CandidateOutput verificaElection(Long id) {
 		return this.candidateClient.verificaElection(id);
 	}
-	
-	public CandidateOutput verificaNumero(Long numero) {
-		return this.candidateClient.verificaNumero(numero);
+
+	public CandidateOutput verificaNumero(Long election, Long numero) {
+		return this.candidateClient.verificaNumero(election, numero);
+	}
+
+	public CandidateOutput getById(Long candidateId) {
+		return this.candidateClient.getById(candidateId);
 	}
 
 	@FeignClient(value = "candidate-service", url = "${url.candidate-service}")
 	private interface CandidateClient {
 
-		@GetMapping("/v1/candidate/{electionId}")
+		@GetMapping("/v1/candidate/getCandidateElection/{electionId}")
 		CandidateOutput verificaElection(@PathVariable(name = "electionId") Long electionId);
-		
-		@GetMapping("/v1/candidate/{numberElection}")
-		CandidateOutput verificaNumero(@PathVariable(name = "numberElection") Long numberElection);
+
+		@GetMapping("/v1/candidate/getByElectionAndNumber/{numberElection}/{electionId}")
+		CandidateOutput verificaNumero(@PathVariable(name = "numberElection") Long numberElection,
+				@PathVariable(name = "electionId") Long electionId);
+
+		@GetMapping("/v1/candidate/{candidateId}")
+		CandidateOutput getById(@PathVariable(name = "candidateId") Long candidateId);
+
 	}
+
 }

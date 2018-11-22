@@ -5,7 +5,6 @@ import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
 import io.swagger.annotations.ApiOperation;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,9 +57,4 @@ public class ElectionApi {
 		return electionService.delete(electionId);
 	}
 
-	@GetMapping("/{electionId}")
-	@ApiOperation(value = "Get true or false for votes")
-	public Boolean verificaVoteForCandidate(@PathVariable Long electionId) {
-		return electionService.verificaVoteForCandidate(electionId);
-	}
 }
