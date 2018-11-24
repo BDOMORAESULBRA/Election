@@ -1,7 +1,6 @@
 package br.edu.ulbra.election.election.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.edu.ulbra.election.election.client.CandidateClientService;
@@ -19,11 +18,8 @@ import feign.FeignException;
 public class VoteService {
 
 	private final VoteRepository voteRepository;
-
 	private final ElectionRepository electionRepository;
-
 	private final VoterClientService voterClientService;
-
 	private final CandidateClientService candidateClientService;
 
 	@Autowired
@@ -38,13 +34,15 @@ public class VoteService {
 	public GenericOutput electionVote(VoteInput voteInput) {
 
 		Vote vote = new Vote();
-		validateInput(vote, voteInput);
 
-		if (voteInput.getCandidateId() == null) {
+		if (voteInput.getNumberElection() == null) {
 			vote.setBlankVote(true);
+			vote.setNullVote(false);
 		} else {
 			vote.setBlankVote(false);
 		}
+
+		validateInput(vote, voteInput);
 
 		voteRepository.save(vote);
 
@@ -81,8 +79,11 @@ public class VoteService {
 		}
 
 		try {
-			candidateClientService.verificaNumero(voteInput.getCandidateId(), voteInput.getElectionId());
-			vote.setNullVote(false);
+			if (!vote.getBlankVote()) {
+				candidateClientService.verificaNumero(voteInput.getNumberElection(), voteInput.getElectionId());
+				vote.setNullVote(false);
+				vote.setNumberElection(voteInput.getNumberElection());
+			}
 		} catch (FeignException e) {
 			if (e.status() == 500) {
 				vote.setNullVote(true);

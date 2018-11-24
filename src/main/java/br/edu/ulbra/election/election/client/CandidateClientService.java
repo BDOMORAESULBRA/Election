@@ -1,5 +1,6 @@
 package br.edu.ulbra.election.election.client;
 
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,10 @@ public class CandidateClientService {
 		return this.candidateClient.getById(candidateId);
 	}
 
+	public ArrayList<CandidateOutput> getListCandidatesByElectionId(Long electionId) {
+		return this.candidateClient.getListCandidatesByElectionId(electionId);
+	}
+
 	@FeignClient(value = "candidate-service", url = "${url.candidate-service}")
 	private interface CandidateClient {
 
@@ -42,6 +47,8 @@ public class CandidateClientService {
 		@GetMapping("/v1/candidate/{candidateId}")
 		CandidateOutput getById(@PathVariable(name = "candidateId") Long candidateId);
 
+		@GetMapping("/v1/candidate/getCandidateList/{electionId}")
+		ArrayList<CandidateOutput> getListCandidatesByElectionId(@PathVariable(name = "electionId") Long electionId);
 	}
 
 }

@@ -4,12 +4,12 @@ import br.edu.ulbra.election.election.output.v1.ElectionCandidateResultOutput;
 import br.edu.ulbra.election.election.output.v1.ResultOutput;
 import br.edu.ulbra.election.election.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/v1/result")
 public class ResultApi {
 
@@ -22,7 +22,7 @@ public class ResultApi {
 
 	@GetMapping("/election/{electionId}")
 	public ResultOutput getResultByElection(@PathVariable Long electionId) {
-		return new ResultOutput();
+		return resultService.getResultByElection(electionId);
 	}
 
 	@GetMapping("/candidate/{candidateId}")

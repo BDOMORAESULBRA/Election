@@ -1,7 +1,6 @@
 package br.edu.ulbra.election.election.service;
 
 import br.edu.ulbra.election.election.repository.ElectionRepository;
-import br.edu.ulbra.election.election.repository.VoteRepository;
 import feign.FeignException;
 import br.edu.ulbra.election.election.client.CandidateClientService;
 import br.edu.ulbra.election.election.model.Election;
@@ -9,12 +8,12 @@ import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
+import br.edu.ulbra.election.election.output.v1.ResultOutput;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,8 @@ public class ElectionService {
 
 	private final ElectionRepository electionRepository;
 	private final ModelMapper modelMapper;
-	private final VoteRepository voteRepository;
 	private final CandidateClientService candidateClientService;
+	private final ResultService resultService;
 
 	private static final String MESSAGE_INVALID_ID = "Invalid id";
 	private static final String MESSAGE_INVALID_YEAR = "Invalid year";
@@ -33,11 +32,11 @@ public class ElectionService {
 
 	@Autowired
 	public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper,
-			VoteRepository voteRepository, CandidateClientService candidateClientService) {
+			CandidateClientService candidateClientService, ResultService resultService) {
 		this.electionRepository = electionRepository;
 		this.modelMapper = modelMapper;
-		this.voteRepository = voteRepository;
 		this.candidateClientService = candidateClientService;
+		this.resultService = resultService;
 	}
 
 	public List<ElectionOutput> getAll() {
@@ -97,7 +96,7 @@ public class ElectionService {
 		}
 		validateInput(electionInput);
 
-		//verificaVote(electionId);
+		verificaVote(electionId);
 		verificaCandidate(electionId);
 
 		Election election = electionRepository.findById(electionId).orElse(null);
@@ -117,7 +116,7 @@ public class ElectionService {
 			throw new GenericOutputException(MESSAGE_INVALID_ID);
 		}
 
-		//verificaVote(electionId);
+		verificaVote(electionId);
 		verificaCandidate(electionId);
 
 		Election election = electionRepository.findById(electionId).orElse(null);
@@ -145,9 +144,13 @@ public class ElectionService {
 
 	}
 
-	//public void verificaVote(Long electionId) {
+	public void verificaVote(Long electionId) {
+		ResultOutput resultOfElection = resultService.getResultByElection(electionId);
 
-	//}
+		if (resultOfElection.getTotalVotes() > 0) {
+			throw new GenericOutputException("This election have votes!");
+		}
+	}
 
 	private void verificaCandidate(Long electionId) {
 

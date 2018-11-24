@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
 import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.repository.VoteRepository;
 
@@ -49,11 +48,11 @@ public class Vote {
 		this.voterId = voter_Id;
 	}
 
-	public Long getCandidateId() {
+	public Long getNumberElection() {
 		return numberElection;
 	}
 
-	public void setCandidateId(Long numberElection) {
+	public void setNumberElection(Long numberElection) {
 		this.numberElection = numberElection;
 	}
 
@@ -80,7 +79,7 @@ public class Vote {
 	public void setElection(Election election) {
 		this.election = election;
 	}
-	
+
 	public static boolean verificaVoto(VoteInput voteInput, VoteRepository voteRepository) {
 
 		Long idTeste = voteInput.getVoterId();
@@ -94,7 +93,6 @@ public class Vote {
 			}
 		}
 		return false;
-
 	}
 
 }

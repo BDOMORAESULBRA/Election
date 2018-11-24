@@ -1,12 +1,11 @@
 package br.edu.ulbra.election.election.model;
 
 import javax.persistence.*;
-
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 
 @Entity
 public class Election {
-	
+
 	public static String estados[] = { "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
 			"PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RO", "RS", "RR", "SC", "SE", "SP", "TO", "BR" };
 
@@ -72,10 +71,9 @@ public class Election {
 		}
 	}
 
-	
 	public static boolean verificaEstado(String e) {
-		for(int x = 0; x < estados.length; x++) {
-			if(estados[x].equalsIgnoreCase(e)) {
+		for (int x = 0; x < estados.length; x++) {
+			if (estados[x].equalsIgnoreCase(e)) {
 				return true;
 			}
 		}
