@@ -1,6 +1,7 @@
 package br.edu.ulbra.election.election.service;
 
 import br.edu.ulbra.election.election.repository.ElectionRepository;
+import br.edu.ulbra.election.election.repository.VoteRepository;
 import feign.FeignException;
 import br.edu.ulbra.election.election.client.CandidateClientService;
 import br.edu.ulbra.election.election.model.Election;
@@ -8,7 +9,6 @@ import br.edu.ulbra.election.election.exception.GenericOutputException;
 import br.edu.ulbra.election.election.input.v1.ElectionInput;
 import br.edu.ulbra.election.election.output.v1.ElectionOutput;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
-import br.edu.ulbra.election.election.output.v1.ResultOutput;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -24,7 +24,7 @@ public class ElectionService {
 	private final ElectionRepository electionRepository;
 	private final ModelMapper modelMapper;
 	private final CandidateClientService candidateClientService;
-	private final ResultService resultService;
+	private final VoteRepository voteRepository;
 
 	private static final String MESSAGE_INVALID_ID = "Invalid id";
 	private static final String MESSAGE_INVALID_YEAR = "Invalid year";
@@ -32,11 +32,11 @@ public class ElectionService {
 
 	@Autowired
 	public ElectionService(ElectionRepository electionRepository, ModelMapper modelMapper,
-			CandidateClientService candidateClientService, ResultService resultService) {
+			CandidateClientService candidateClientService, VoteRepository voteRepository) {
 		this.electionRepository = electionRepository;
 		this.modelMapper = modelMapper;
 		this.candidateClientService = candidateClientService;
-		this.resultService = resultService;
+		this.voteRepository = voteRepository;
 	}
 
 	public List<ElectionOutput> getAll() {
@@ -145,9 +145,8 @@ public class ElectionService {
 	}
 
 	public void verificaVote(Long electionId) {
-		ResultOutput resultOfElection = resultService.getResultByElection(electionId);
-
-		if (resultOfElection.getTotalVotes() > 0) {
+		Long votes = voteRepository.countByElectionId(electionId);
+		if (votes > 0) {
 			throw new GenericOutputException("This election have votes!");
 		}
 	}

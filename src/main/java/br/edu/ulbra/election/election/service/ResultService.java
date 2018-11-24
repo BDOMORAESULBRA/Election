@@ -22,8 +22,8 @@ public class ResultService {
 	private final CandidateClientService candidateClientService;
 
 	@Autowired
-	public ResultService(VoteRepository voteRepository, ElectionService electionService,
-			ElectionRepository electionRepository, CandidateClientService candidateClientService) {
+	public ResultService(VoteRepository voteRepository, ElectionRepository electionRepository,
+			CandidateClientService candidateClientService) {
 		this.voteRepository = voteRepository;
 		this.electionRepository = electionRepository;
 		this.candidateClientService = candidateClientService;
@@ -95,16 +95,16 @@ public class ResultService {
 			resultElection.setTotalVotes(votesValid + votesBlank + votesNull);
 			resultElection.setBlankVotes(votesBlank);
 			resultElection.setNullVotes(votesNull);
-			
-			Election election =  electionRepository.findFirstById(electionId);
+
+			Election election = electionRepository.findFirstById(electionId);
 
 			ElectionOutput electionOutput = new ElectionOutput();
-			
+
 			electionOutput.setDescription(election.getDescription());
 			electionOutput.setId(election.getId());
 			electionOutput.setStateCode(election.getStateCode());
 			electionOutput.setYear(election.getYear());
-			
+
 			resultElection.setElection(electionOutput);
 
 		} catch (FeignException e) {
