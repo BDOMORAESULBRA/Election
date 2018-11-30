@@ -7,8 +7,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -24,19 +25,21 @@ public class VoteApi {
 		this.voteService = voteService;
 	}
 
-	@PutMapping("/")
-	public GenericOutput electionVote(@RequestBody VoteInput voteInput) {
-		return voteService.electionVote(voteInput);
+	@PostMapping("/")
+	public GenericOutput electionVote(@RequestHeader(value = "x-token") String token,
+			@RequestBody VoteInput voteInput) {
+		return voteService.electionVote(token, voteInput);
+	}
+
+	@PostMapping("/multiple")
+	public GenericOutput multipleElectionVote(@RequestHeader(value = "x-token") String token,
+			@RequestBody List<VoteInput> voteInputList) {
+		return new GenericOutput("OK");
 	}
 
 	@GetMapping("/{voterId}")
 	@ApiOperation(value = "Get if exists voter in vote")
 	public Boolean verificaVoter(@PathVariable Long voterId) {
 		return voteService.verificaVoter(voterId);
-	}
-
-	@PutMapping("/multiple")
-	public GenericOutput multipleElectionVote(@RequestBody List<VoteInput> voteInputList) {
-		return new GenericOutput("OK");
 	}
 }

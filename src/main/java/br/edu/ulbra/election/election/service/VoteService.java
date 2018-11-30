@@ -10,6 +10,7 @@ import br.edu.ulbra.election.election.input.v1.VoteInput;
 import br.edu.ulbra.election.election.model.Election;
 import br.edu.ulbra.election.election.model.Vote;
 import br.edu.ulbra.election.election.output.v1.GenericOutput;
+import br.edu.ulbra.election.election.output.v1.VoterOutput;
 import br.edu.ulbra.election.election.repository.ElectionRepository;
 import br.edu.ulbra.election.election.repository.VoteRepository;
 import feign.FeignException;
@@ -31,7 +32,19 @@ public class VoteService {
 		this.candidateClientService = candidateClientService;
 	}
 
-	public GenericOutput electionVote(VoteInput voteInput) {
+	public GenericOutput electionVote(String token, VoteInput voteInput) {
+
+		try {
+
+			VoterOutput v = voterClientService.verificaToken(token);
+
+			if (!v.getId().equals(voteInput.getVoterId())) {
+				throw new GenericOutputException("Invalid token for this user");
+			}
+
+		} catch (FeignException e) {
+			throw new GenericOutputException("Invalid Token");
+		}
 
 		Vote vote = new Vote();
 
@@ -49,9 +62,9 @@ public class VoteService {
 		return new GenericOutput("OK");
 	}
 
-	public GenericOutput multiple(List<VoteInput> voteInputList) {
+	public GenericOutput multiple(String token, List<VoteInput> voteInputList) {
 		for (VoteInput voteInput : voteInputList) {
-			this.electionVote(voteInput);
+			this.electionVote(token, voteInput);
 		}
 		return new GenericOutput("OK");
 	}
